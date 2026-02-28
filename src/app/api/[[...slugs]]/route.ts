@@ -1,10 +1,9 @@
-import { Elysia, t } from 'elysia'
+import { Elysia } from "elysia";
 
-const api = new Elysia({ prefix: '/api' })   // match the folder name
-  .get('/', ' Hello from Elysia inside Next.js')
-  .post('/', ({ body }) => body, {
-    body: t.Object({ name: t.String() })
-  })
+const app = new Elysia({ prefix: "/api" })
+  .get("/user", { user: { name: "John" } });
 
-export const GET  = api.fetch  
-export const POST = api.fetch
+export const GET = app.fetch;
+export const POST = app.fetch;
+
+export type App = typeof app;
