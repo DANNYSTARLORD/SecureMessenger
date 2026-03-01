@@ -1,19 +1,34 @@
 "use client";
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { Meteors } from "@/components/ui/meteors";
 import { ShineBorder } from "@/components/ui/shine-border";
+import { client } from "@/lib/client";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [username, setUsername] = useState("");
+  const router = useRouter();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!username.trim()) return;
+     createRoom();
   };
+
+  const {mutate: createRoom} = useMutation({
+    mutationFn: async () => {
+      const res = await client.room.create.post();
+      
+      if (res.status === 200) {
+        router.push(`/room/${res.data?.roomId}`);
+      }
+    }
+  });
 
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-center p-4 bg-black overflow-hidden">
-      <Meteors minDelay={1} maxDelay={2} number={20} />
+      <Meteors minDelay={2} maxDelay={3} number={20} />
 
       <div className="relative z-10 w-full max-w-md space-y-8">
         <div className="text-center space-y-2">
@@ -43,11 +58,7 @@ export default function Home() {
             <button
               type="submit"
               disabled={!username.trim()}
-              className="w-full bg-zinc-100 text-black p-3 text-sm font-bold 
-              mt-2 cursor-pointer disabled:opacity-50
-              transition-all duration-200 ease-out
-              hover:bg-zinc-200 hover:shadow-md hover:-translate-y-0.5
-              active:translate-y-0 active:shadow-sm"
+              className="w-full bg-zinc-100 text-black p-3 text-sm font-bold mt-2 cursor-pointer disabled:opacity-50 transition-all duration-200 ease-out hover:bg-zinc-200 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm"
             >
               Create Secure Room
             </button>
