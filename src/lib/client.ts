@@ -1,4 +1,10 @@
 import { treaty } from "@elysiajs/eden";
-import type { App } from "../app/api/[[...slugs]]/route";
+import type { App } from "../../server/index";
 
-export const client = treaty<App>("http://localhost:3000").api;
+export const backend = treaty<App>("http://localhost:3001", {
+  fetch: {
+    credentials: "include",
+  },
+});
+
+export const client = backend.api;
