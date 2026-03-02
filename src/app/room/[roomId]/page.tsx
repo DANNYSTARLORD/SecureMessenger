@@ -22,7 +22,10 @@ type Message = {
   roomId: string;
 };
 
-const WS_BASE = process.env.NEXT_PUBLIC_WS_URL ?? "ws://localhost:3001";
+const WS_BASE =
+  typeof window !== "undefined"
+    ? `${window.location.protocol === "https:" ? "wss" : "ws"}://${window.location.hostname}:3001`
+    : "ws://localhost:3001";
 
 const Page = () => {
   const params = useParams();

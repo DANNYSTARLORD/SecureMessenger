@@ -123,9 +123,9 @@ async function verifyAuth(
 const app = new Elysia()
   .use(
     cors({
-      origin: process.env.FRONTEND_ORIGIN ?? "http://localhost:3000",
+      origin: true,
       credentials: true,
-    }),
+    })
   )
 
   // -----------------------------------------------------------------------
@@ -378,10 +378,13 @@ const app = new Elysia()
   // -----------------------------------------------------------------------
   // Start
   // -----------------------------------------------------------------------
-  .listen(WS_PORT);
+  .listen({
+    port: WS_PORT,
+    hostname: "0.0.0.0",
+  });
 
-console.log(`[server] Elysia running at http://localhost:${WS_PORT}`);
-console.log(`[server] WebSocket endpoint: ws://localhost:${WS_PORT}/ws`);
+console.log(`[server] Elysia running at http://0.0.0.0:${WS_PORT}`);
+console.log(`[server] WebSocket endpoint: ws://0.0.0.0:${WS_PORT}/ws`);
 console.log(`[server] Redis: ${redisOptions.host}:${redisOptions.port}`);
 
 export type App = typeof app;
