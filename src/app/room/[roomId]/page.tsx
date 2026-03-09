@@ -236,7 +236,7 @@ const Page = () => {
   // Render
   // -----------------------------------------------------------------------
   return (
-    <main className="bg-black flex flex-col h-screen max-h-screen overflow-hidden">
+    <main className=" bg-black animate-zoom transform-gpu will-change-transform flex flex-col h-screen max-h-screen overflow-hidden">
       {/* Header */}
       <header className="border-b border-zinc-800 p-4 flex items-center justify-between bg-zinc-900/30">
         <div className="flex items-center gap-4">
