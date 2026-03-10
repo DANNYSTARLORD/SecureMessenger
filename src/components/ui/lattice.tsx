@@ -9,7 +9,9 @@ function CryptoLattice() {
   const group = useRef<THREE.Group>(null!);
 
   const { positions, colors, lines } = useMemo(() => {
-    const pointCount = 260;
+    const pointCount = 300;
+    // Slightly larger spread to accommodate bigger nodes
+    const spread = 15;
 
     const pts: THREE.Vector3[] = [];
     const pos: number[] = [];
@@ -17,22 +19,26 @@ function CryptoLattice() {
 
     for (let i = 0; i < pointCount; i++) {
       const v = new THREE.Vector3(
-        THREE.MathUtils.randFloatSpread(12),
-        THREE.MathUtils.randFloatSpread(12),
-        THREE.MathUtils.randFloatSpread(12),
+        THREE.MathUtils.randFloatSpread(spread),
+        THREE.MathUtils.randFloatSpread(spread),
+        THREE.MathUtils.randFloatSpread(spread),
       );
 
       pts.push(v);
 
       pos.push(v.x, v.y, v.z);
 
-      const c = new THREE.Color().setHSL(Math.random(), 0.7, 0.6);
+      // More diverse colors: random hue, saturation, lightness
+      const hue = Math.random();
+      const saturation = 0.5 + Math.random() * 0.5; // 0.5–1.0
+      const lightness = 0.5 + Math.random() * 0.1; // 0.4–0.9
+      const c = new THREE.Color().setHSL(hue, saturation, lightness);
       col.push(c.r, c.g, c.b);
     }
 
     const linePos: number[] = [];
-
-    const threshold = 2.3;
+    // Slightly increased threshold to keep connections visible with larger nodes
+    const threshold = 2.8;
 
     for (let i = 0; i < pts.length; i++) {
       for (let j = i + 1; j < pts.length; j++) {
@@ -61,9 +67,21 @@ function CryptoLattice() {
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
 
-    group.current.rotation.y += 0.002;
-    group.current.rotation.x = Math.sin(t * 0.4) * 0.2;
+    // group.current.rotation.y += 0.0001;
+    group.current.rotation.x = Math.cos(t * 0.2) * 1;
   });
+
+  const circleTexture = useMemo(() => {
+    const canvas = document.createElement("canvas");
+    canvas.width = 32;
+    canvas.height = 32;
+    const ctx = canvas.getContext("2d")!;
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.arc(16, 16, 14, 0, 2 * Math.PI);
+    ctx.fill();
+    return new THREE.CanvasTexture(canvas);
+  }, []);
 
   return (
     <group ref={group}>
@@ -84,11 +102,13 @@ function CryptoLattice() {
           />
         </bufferGeometry>
 
+        {/* INCREASED NODE SIZE */}
         <pointsMaterial
-          size={0.18}
+          size={0.3}
           vertexColors
           transparent
           depthWrite={false}
+          map={circleTexture}
         />
       </points>
 
@@ -112,14 +132,15 @@ function CryptoLattice() {
 export default function Lattice() {
   return (
     <Canvas
-      camera={{ position: [0, 0, 20], fov: 60 }}
+      camera={{ position: [0, 0, 10], fov: 60 }}
       style={{ width: "100%", height: "100%" }}
     >
-      <ambientLight intensity={0.8} />
+      {/*<ambientLight intensity={1} />*/}
+      <spotLight intensity={0.5} />
 
       <CryptoLattice />
 
-      <OrbitControls enableZoom={false} enablePan={false} rotateSpeed={0.6} />
+      <OrbitControls enableZoom={true} enablePan={true} rotateSpeed={0.6} />
     </Canvas>
   );
 }
